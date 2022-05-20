@@ -30,7 +30,7 @@ class Searchbar extends Component {
   render() {
     return (
       <header className={s.searchbar}>
-        <form className={s.form}>
+        <form className={s.form} onSubmit={this.handleSubmit}>
           <button type="submit" className={s.button}>
             <FaSearch size={30} fill="purple" />
           </button>
