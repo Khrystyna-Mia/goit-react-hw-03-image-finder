@@ -8,9 +8,9 @@ const ImageGallery = ({ images, onToggleModal, onOpenModal }) => {
       {images.map(({ id, webformatURL }) => (
         <ImageGalleryItem
           key={id}
-          URL={webformatURL}
+          url={webformatURL}
           onOpenModal={onOpenModal}
-          oonToggleModal={onToggleModal}
+          onToggleModal={onToggleModal}
         />
       ))}
     </ul>
@@ -20,7 +20,12 @@ const ImageGallery = ({ images, onToggleModal, onOpenModal }) => {
 ImageGallery.propTypes = {
   onToggleModal: PropTypes.func.isRequired,
   onOpenModal: PropTypes.func.isRequired,
-  images: PropTypes.arrayOf(PropTypes.object).isRequired,
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      webformatURL: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default ImageGallery;
