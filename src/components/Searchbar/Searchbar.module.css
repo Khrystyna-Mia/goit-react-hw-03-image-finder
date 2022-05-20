@@ -56,19 +56,6 @@
   opacity: 1;
 }
 
-/* .SearchForm-button-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    clip-path: inset(50%);
-    border: 0;
-}
-   */
-
 .input {
   display: inline-block;
 
@@ -76,7 +63,7 @@
   padding-right: 4px;
   padding-left: 4px;
 
-  font: inherit;
+  font-family: 'Georgia', sans-serif;
   font-size: 20px;
 
   border: none;
@@ -84,6 +71,6 @@
 }
 
 .input::placeholder {
-  font: inherit;
+  font-family: 'Georgia', sans-serif;
   font-size: 18px;
 }
