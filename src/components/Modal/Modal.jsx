@@ -29,7 +29,9 @@ class Modal extends Component {
   render() {
     return createPortal(
       <div className={s.overlay} onClick={this.handleBackdropClick}>
-        <div className={s.modal}>{/* <img/> */}</div>
+        <div className={s.modal}>
+          <img src={this.props.url} alt="" width={800} />
+        </div>
       </div>,
       modalRoot
     );
@@ -37,6 +39,7 @@ class Modal extends Component {
 }
 
 Modal.propTypes = {
+  url: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 

@@ -13,7 +13,7 @@ class ImagesApiService {
     const response = await axios.get(
       `${API_URL}?q=${this.query}&page=${this.page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
     );
-    this.incrementPage();
+    // this.incrementPage();
     return response.data.hits;
   }
 
@@ -28,6 +28,10 @@ class ImagesApiService {
   incrementPage() {
     this.page += 1;
   }
+
+  // resetPage() {
+  //   this.page = 1;
+  // }
 }
 
 export default ImagesApiService;

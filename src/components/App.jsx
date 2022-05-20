@@ -5,8 +5,10 @@ import ImagesApiService from 'services/api';
 
 import Container from './Container';
 import Searchbar from './Searchbar';
+import Loader from './Loader';
 import ImageGallery from './ImageGallery';
 import Modal from './Modal';
+import Button from './Button';
 
 const imagesApiService = new ImagesApiService();
 
@@ -14,7 +16,7 @@ class App extends Component {
   state = {
     images: [],
     query: '',
-    largeImageUrl: '',
+    largeImageURL: '',
     isLoading: false,
     showModal: false,
     error: null,
@@ -30,7 +32,7 @@ class App extends Component {
   }
 
   onSearchFormSubmit = newQuery => {
-    this.state({
+    this.setState({
       query: newQuery,
     });
   };
@@ -43,9 +45,9 @@ class App extends Component {
 
   onOpenModal = e => {
     this.setState({
-      largeImageUrl: this.state.images.find(
-        image => image.webformatURL === e.target.src
-      ).largeImageUrl,
+      largeImageURL: this.state.images.find(
+        url => url.webformatURL === e.target.src
+      ).largeImageURL,
     });
   };
 
@@ -78,7 +80,7 @@ class App extends Component {
   };
 
   render() {
-    const { images, showModal, largeImageUrl } = this.state;
+    const { images, isLoading, showModal, largeImageURL } = this.state;
 
     return (
       <Container>
@@ -92,8 +94,14 @@ class App extends Component {
           />
         }
 
+        {isLoading && <Loader />}
+
         {showModal && (
-          <Modal onToggleModal={this.onToggleModal} img={largeImageUrl} />
+          <Modal onClose={this.onToggleModal} url={largeImageURL} />
+        )}
+
+        {images.length >= 12 && (
+          <Button onLoadMore={this.onLoadMore} isLoading={isLoading} />
         )}
 
         <ToastContainer autoClose={3000} />
