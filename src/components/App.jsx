@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ImagesApiService from 'services/api';
@@ -10,104 +10,83 @@ import ImageGallery from './ImageGallery';
 import Modal from './Modal';
 import Button from './Button';
 
-const imagesApiService = new ImagesApiService();
+const App = () => {
+  const [images, setImages] = useState([]);
+  const [searchQuery, setQuery] = useState('');
+  const [currentPage, setPage] = useState(1);
+  const [largeImageURL, setLargeImageURL] = useState('');
+  const [isLoading, setLoading] = useState(false);
+  const [showModal, setModal] = useState(false);
+  const [error, setError] = useState(null);
 
-class App extends Component {
-  state = {
-    images: [],
-    query: '',
-    largeImageURL: '',
-    isLoading: false,
-    showModal: false,
-    error: null,
+  useEffect(() => {
+    if (!searchQuery) return;
+
+    const fetchImage = async () => {
+      try {
+        setLoading(true);
+
+        const images = await ImagesApiService(searchQuery, currentPage);
+        setImages(prevImages => [...prevImages, ...images]);
+      } catch (error) {
+        setError({ error });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchImage();
+  }, [searchQuery, currentPage]);
+
+  const onSearchFormSubmit = query => {
+    setImages([]);
+    setQuery(query);
+    setPage(1);
+    setLargeImageURL('');
+    setLoading(false);
+    setModal(false);
+    setError(null);
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    const { query } = this.state;
-    imagesApiService.query = query;
-
-    if (prevState.query !== query) {
-      this.fetchImage();
-    }
-  }
-
-  onSearchFormSubmit = newQuery => {
-    this.setState({
-      query: newQuery,
-    });
+  const onToggleModal = () => {
+    setModal(showModal => !showModal);
   };
 
-  onToggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
+  const onOpenModal = webformatURL => {
+    setLargeImageURL(webformatURL);
+    setModal(true);
   };
 
-  onOpenModal = e => {
-    this.setState({
-      largeImageURL: this.state.images.find(
-        url => url.webformatURL === e.target.src
-      ).largeImageURL,
-    });
+  const onLoadMore = async () => {
+    setLoading(true);
+    setPage(prevPage => prevPage + 1);
   };
 
-  fetchImage = async () => {
-    this.setState({ isLoading: true });
+  return (
+    <Container>
+      {error && <p>{error}</p>}
 
-    try {
-      const images = await imagesApiService.fetchImg();
-      this.setState({ images });
-    } catch (error) {
-      this.setState({ error });
-    } finally {
-      this.setState({ isLoading: false });
-    }
-  };
+      <Searchbar onSubmit={onSearchFormSubmit} />
 
-  onLoadMore = async () => {
-    this.setState({ isLoading: true });
+      {
+        <ImageGallery
+          images={images}
+          onToggleModal={onToggleModal}
+          onOpenModal={onOpenModal}
+        />
+      }
 
-    try {
-      const images = await imagesApiService.fetchImg();
-      this.setState(prevState => ({
-        images: [...prevState.images, ...images],
-      }));
-    } catch (error) {
-      this.setState({ error });
-    } finally {
-      this.setState({ isLoading: false });
-    }
-  };
+      {isLoading && <Loader />}
 
-  render() {
-    const { images, isLoading, showModal, largeImageURL } = this.state;
+      {showModal && <Modal onClose={onToggleModal} url={largeImageURL} />}
 
-    return (
-      <Container>
-        <Searchbar onSubmit={this.onSearchFormSubmit} />
+      {images.length >= 12 && (
+        <Button onLoadMore={onLoadMore} isLoading={isLoading} />
+      )}
 
-        {
-          <ImageGallery
-            images={images}
-            onToggleModal={this.onToggleModal}
-            onOpenModal={this.onOpenModal}
-          />
-        }
-
-        {isLoading && <Loader />}
-
-        {showModal && (
-          <Modal onClose={this.onToggleModal} url={largeImageURL} />
-        )}
-
-        {images.length >= 12 && (
-          <Button onLoadMore={this.onLoadMore} isLoading={isLoading} />
-        )}
-
-        <ToastContainer autoClose={3000} />
-      </Container>
-    );
-  }
-}
+      <ToastContainer autoClose={3000} />
+    </Container>
+  );
+};
 
 export default App;
